@@ -2,66 +2,88 @@ import requests
 from urllib import parse
 
 pre_url = 'http://cet.99sushe.com/getscore'
-pre_number = '3600121612'
-classroom_number = '116'
-number = pre_number
-agent = 'Mozilla/5.0 (Windows NT 5.1; rv:33.0) Gecko/20100101 Firefox/33.0'
+
+settings = {
+    'school_number' : '360012',
+    'exam_code' : '1612',
+    'c_number' :
+        {
+            'start': 10,
+            'end': 14,
+        },
+    's_number':
+        {
+            'start' : 1,
+            'end' : 30
+        },
+    'name' : '付广'
+}
+
 
 headers = {
-    'User-Agent': agent,
+    'User-Agent': 'Mozilla/5.0 (Windows NT 5.1; rv:33.0) Gecko/20100101 Firefox/33.0',
     'Content-Type': 'application/x-www-form-urlencoded',
-    'charset':'GB2312',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-    'Origin': 'http://cet.99sushe.com',
     'Referer': 'http://cet.99sushe.com/',
-    'Host': 'cet.99sushe.com',
-    'Connection': 'keep-alive',
-    'Accept-Encoding': 'gzip, deflate',
-    'Accept-Language': 'zh-CN,zh;q=0.8',
-    'Upgrade-Insecure-Requests':'1',
-    'Cache-Control': 'max-age=0',
 
 }
+
 cookies= {
     'score':'',
-    'id': number
+    'id': ''
 }
 
 postdata = {
-    'id': number,
-    'name':'付广'
+    'id': '',
+    'name':''
 }
 
+class Student(object):
+    def __init__(self,**setting):
+        self.pre_number = settings['school_number'] + settings['exam_code']
+        self._name_ = settings['name']
+        self.classroom = settings['c_number']
+        self.seat = settings['s_number']
+        self.cookies = cookies
+        self.postdata = postdata
+        self.headers = headers
+        self.pre_url = pre_url
+        self.session = requests.Session()
 
-def get_result(classroom_number,seat_number):
-    number = pre_number + classroom_number + seat_number
-    cookies['id'] = number
-    postdata['id'] = number
-    str_data = parse.urlencode(postdata, encoding='gb2312')
-    url = pre_url + classroom_number + number
-    result = session.post(url=url, data=str_data, headers=headers, cookies=cookies)
-    if result.text == '4':
-        print('number:%s time:%s' %(number,result.elapsed))
-    else:
-        print(result.text)
-
-
-
-session = requests.Session()
-
-
-
-for i in range(10, 14):
-    for j in range(1, 30):
-        if i < 100:
-            classroom_number = '0' + str(i)
+    def search(self,end_number):
+        self.number = self.pre_number + str(end_number)
+        self.cookies['id'] = self.number
+        self.postdata['id'] = self.number
+        self.postdata['name'] = self._name_
+        self.url = self.pre_url + self.number
+        self.str_data = parse.urlencode(self.postdata, encoding='gb2312')
+        self.result = self.session.post(url=self.url,data=self.str_data,headers=self.headers,cookies=self.cookies)
+        if self.result.text == '4':
+            print('number:%s time:%s' % (self.number, self.result.elapsed))
         else:
-            classroom_number = str(i)
-        if j < 10:
-            seat_number = '0' + str(j)
-        else:
-            seat_number = str(j)
-        get_result(classroom_number, seat_number)
+            print(self.result.text)
 
+
+def next_end_number(c_start,c_end,s_start,s_end):
+    for c in range(c_start,c_end):
+        if c < 10:
+            c = '00' + str(c)
+        elif c < 100:
+            c = '0' + str(c)
+        else:
+            c = str(c)
+        for s in range(s_start,s_end):
+            if s < 10:
+                s = '0' + str(s)
+            else:
+                s = str(s)
+            yield (c + s)
+
+student = Student()
+for i in next_end_number(settings['c_number']['start'],
+                         settings['c_number']['end'],
+                         settings['s_number']['start'],
+                         settings['s_number']['end']):
+
+    student.search(i)
 
 
