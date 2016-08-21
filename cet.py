@@ -1,22 +1,26 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import requests
+import urllib
 from urllib import parse
 
 pre_url = 'http://cet.99sushe.com/getscore'
 
 settings = {
-    'school_number' : '360012',
-    'exam_code' : '1612',
-    'c_number' :
+    'school_number' : '610070', #学校代码。http://www.cha134.com/cetcode.asp
+    'exam_code' : '1612',  #考试代码,四级为1611，六级是1612
+    'c_number' : # classroom number
         {
-            'start': 10,
-            'end': 14,
+            'start': 1,
+            'end': 150,
         },
-    's_number':
+    's_number': #seat number
         {
             'start' : 1,
             'end' : 30
         },
-    'name' : '付广'
+    'name' : '张延' #姓名前两个字
 }
 
 
@@ -58,6 +62,7 @@ class Student(object):
         self.str_data = parse.urlencode(self.postdata, encoding='gb2312')
         self.result = self.session.post(url=self.url,data=self.str_data,headers=self.headers,cookies=self.cookies)
         if self.result.text == '4':
+            # pass
             print('number:%s time:%s' % (self.number, self.result.elapsed))
         else:
             print(self.result.text)
