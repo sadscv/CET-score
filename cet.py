@@ -83,12 +83,13 @@ def next_end_number(c_start,c_end,s_start,s_end):
                 s = str(s)
             yield (c + s)
 
-student = Student()
-for i in next_end_number(settings['c_number']['start'],
-                         settings['c_number']['end'],
-                         settings['s_number']['start'],
-                         settings['s_number']['end']):
+if __name__ == '__main__':
+    student = Student()
+    for i in next_end_number(settings['c_number']['start'],
+                            settings['c_number']['end'],
+                            settings['s_number']['start'],
+                            settings['s_number']['end']):
 
-    student.search(i)
+        student.search(i)
 
 
